@@ -16,6 +16,7 @@ INSERT Accounts VALUES (47387438, 500);
 -- For example customer's wife goes to cashpoint while customer goes to counter
 -- at exact same time.
 
+BEGIN TRAN
 IF NOT EXISTS (
 	SELECT * FROM Accounts WITH(UPDLOCK)
 	WHERE AccountID = 47387438 AND bALANCE >= 400
@@ -25,3 +26,8 @@ BEGIN
 	ROLLBACK TRAN;
 	THROW 50000, 'There are insufficient funds to make this withdrawal', 1;
 END
+
+UPDATE Accounts SET
+	Balance -= 400
+WHERE AccountID = 47387438 AND Balance >= 400
+COMMIT TRAN;
