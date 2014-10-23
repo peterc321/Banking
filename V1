@@ -1,0 +1,27 @@
+-- Creates a table with two columns which accept only integers and cannot be null values.
+
+CREATE TABLE Accounts (
+	AccountID INT NOT NULL
+	,Balance INT NOT NULL
+)
+
+-- Inserts a row with values for columns AccountID and Balance
+
+INSERT Accounts VALUES (47387438, 500);
+
+
+
+-- VERSION 1 - Basic banking app: prevents customers from withdrawing more
+-- funds than are available if attempting to make simultaneous transactions.
+-- For example customer's wife goes to cashpoint while customer goes to counter
+-- at exact same time.
+
+IF NOT EXISTS (
+	SELECT * FROM Accounts WITH(UPDLOCK)
+	WHERE AccountID = 47387438 AND bALANCE >= 400
+)
+
+BEGIN
+	ROLLBACK TRAN;
+	THROW 50000, 'There are insufficient funds to make this withdrawal', 1;
+END
