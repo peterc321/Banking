@@ -1,0 +1,15 @@
+-- Version 2 - Basic banking app: Achieves the same objective 
+--  as Version 1 without needing a SELECT statement with the 
+-- update lock. Instead uses the ROWCOUNT function.
+
+BEGIN TRAN;
+	UPDATE Accounts SET
+		Balance -= 400
+	WHERE AccountID = 47387438 AND Balance >= 400
+
+	IF(@@ROWCOUNT <> 1)
+	BEGIN
+		ROLLBACK TRAN;
+		THROW 50000, 'There are insufficient funds to make this withdrawal', 1;
+	END
+COMMIT TRAN
